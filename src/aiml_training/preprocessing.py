@@ -1,33 +1,14 @@
-from pathlib import Path
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from matplotlib.ticker import StrMethodFormatter, FuncFormatter
-import seaborn as sns
 
-# Creating a flexible path variable to execute file from any path.
-project_root = Path(__file__).resolve().parents[2]
-data_dir = project_root/"data"
 
-# Data preprocessing, cleaning and normalizaton | etl (Extract, Transform, Load) | Load csv
-Alzheimers_df = pd.read_csv(data_dir/"Alzheimers_Disease_dataset.csv")
 
-# Import and structure question risk weights
-question_risk_weights = pd.read_csv(data_dir/"question_risk_weights.csv")
-question_weights = dict(zip(question_risk_weights["Question"], question_risk_weights["Weight"]))
 
-# Import and structure state population data
-state_populations = pd.read_csv(data_dir/"state_populations_2015-2025.csv")
-state_populations = state_populations.drop(columns="Census_Vintage")
-state_pop_lookup = dict(zip(zip(state_populations["State"], state_populations["Year"]), state_populations["Population"]))
 
-# Import and structure state fifty plus data
-fifty_plus = pd.read_csv(data_dir/"fifty_plus.csv")
-fifty_plus_lookup = dict(zip(zip(fifty_plus["State"], fifty_plus["Year"]), fifty_plus["Age_50_Plus_Percentage"]))
 
-# Import estimated cases by year (2015 - 2020)
-estimated_cases = pd.read_csv(data_dir/"estimated_ad_cases_2015_2020.csv")
-estimated_cases_lookup = dict(zip(zip(estimated_cases["State"], estimated_cases["Year"]), estimated_cases["Estimated_AD_Cases"]))
+
+
+
+
+
 
 # Manipulation methods:
 # columns(df.drop(column, axis=1)), rows(df.dropna()), drop_duplicate_rows(drop_duplicates())
@@ -290,12 +271,12 @@ test_data2 = Alzheimers_df[Alzheimers_df["Year"] > 2020]
 test_data.to_csv(data_dir/"test_dataset.csv", index=False)
 test_data2.to_csv(data_dir/"test2_dataset.csv", index=False)"""
 
-"""print(Alzheimers_df.info())
+print(Alzheimers_df.info())
 
-ad_estimates = Alzheimers_df.groupby("Year")["Estimated_AD_state_cases"].agg(['mean', 'median', 'sum'])
+ad_estimates = Alzheimers_df.groupby("Year")["Estimated_AD_state_cases"].mean().sort_values()
 print(ad_estimates)
 
-# Theme
+"""# Theme
 sns.set_theme(
     style='whitegrid',
     context='talk',
@@ -303,7 +284,7 @@ sns.set_theme(
 )
 
 # Figure
-plt.figure(figsize=(12,6))
+fig = plt.figure(figsize=(12,6))
 
 # Plot data
 plt.plot(
@@ -357,8 +338,231 @@ plt.grid(alpha=.20)
 # Layout
 plt.tight_layout()
 
-# Display
+# Save and Dispay
+fig.savefig(os.path.join("Charts", 'mean_vs_median.png'))
+plt.show()"""
+
+ad_cases = Alzheimers_df.groupby(["Year", "State"])["Estimated_AD_state_cases"].mean()
+
+top_states = [
+    "California",
+    "Florida",
+    "New York",
+    "Pennsylvania",
+    "Illinois"
+]
+
+filterd_states = Alzheimers_df[Alzheimers_df["State"].isin(top_states)]
+filterd_states = filterd_states.copy()
+filterd_states["State"] = filterd_states["State"].cat.remove_unused_categories()
+print(filterd_states["State"].unique())
+sns.set_theme(
+    style='whitegrid',
+    context='talk',
+    palette='Set2'
+)
+
+top_five_fig = plt.figure(figsize=(12,6))
+sns.lineplot(
+    data=filterd_states,
+    x="Year",
+    y="Estimated_AD_state_cases",
+    linewidth=2,
+    marker='o',
+    hue="State"
+)
+
+plt.title(
+    "Top 5 Weighted States from 2015 - 2020 For Alzheimers Cases",
+    fontsize=16,
+    fontweight='bold',
+    pad=20
+)
+
+plt.xlabel("Year"); plt.ylabel("Estimated AD Cases")
+plt.tick_params(axis='both', labelsize=14)
+plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, pos: f'{x/1000:,.0f}K'))
+ca_cases = ad_cases.xs("California", level="State")
+for x, y in zip(ca_cases.index, ca_cases):
+    if pd.notna(y):
+        plt.annotate(
+            f"{y:,.0f}",
+            (x, y),
+            textcoords='offset points',
+            xytext=(0, 10),
+            ha='center',
+            fontsize=12
+        )
+plt.legend(
+    title="States",
+    title_fontsize=12,
+    loc= "upper left",
+    bbox_to_anchor=(1,.50),
+    fontsize=10,
+    frameon=False
+)
+sns.despine()
+plt.grid(alpha=.20)
+plt.tight_layout()
+top_five_fig.savefig(os.path.join("Charts", "top_five_states_by_cases.png"))
 plt.show()
 
 
-"""
+
+growth_pct = (((ad_cases.loc[2020] - ad_cases.loc[2015]) / ad_cases.loc[2015]) * 100).reset_index()
+print(type(growth_pct))
+print(growth_pct.sort_values(by="Estimated_AD_state_cases", ascending=False))
+top_five_pct = growth_pct.sort_values(by="Estimated_AD_state_cases", ascending=False).head(5)
+top_five_pct.columns = ["State", "Growth_Pct"]
+top_five_pct["State"] = top_five_pct["State"].cat.remove_unused_categories()
+top_five_pct = top_five_pct.sort_values(by="Growth_Pct", ascending=False)
+
+growth_pct = growth_pct[growth_pct["State"].isin(filterd_states["State"])]
+print(type(growth_pct))
+print(growth_pct)
+growth_pct = growth_pct.rename(columns={"Estimated_AD_state_cases":"Growth_Pct"})
+print(type(growth_pct))
+print(growth_pct)
+print(len(growth_pct["State"]))
+print(len(growth_pct["State"].cat.categories))
+growth_pct["State"] = growth_pct["State"].cat.remove_unused_categories()
+print(len(growth_pct["State"].cat.categories))
+
+sns.set_theme(
+    style='whitegrid',
+    context='talk',
+    palette='Set2'
+)
+
+growth_pct_fig = plt.figure(figsize=(12,6))
+
+ax = sns.barplot(
+        data=top_five_pct,
+        x='State',
+        y='Growth_Pct',
+        width=.60,
+        hue='State',
+        dodge=False,
+        palette="Set2"
+    )
+for container in ax.containers:
+    ax.bar_label(
+        container,
+        fmt="%.2f%%",
+        padding=3,
+        fontsize=14,
+        fontweight='400'
+    )
+
+plt.title(
+    "Top 5 States By Percentage Increase in Alzheimers Cases",
+    fontweight= 'bold',
+    fontsize=16,
+    pad=20
+)
+
+plt.xlabel("States"); plt.ylabel("Percentage Increase")
+plt.tick_params(axis='both', labelsize=14)
+plt.gca().yaxis.set_major_formatter(FuncFormatter(lambda x, pos: f"{x:.2f}%"))
+
+sns.despine()
+plt.grid(alpha=.20)
+plt.tight_layout()
+growth_pct_fig.savefig(os.path.join("Charts", "top_five_by_pct.png"))
+plt.show()
+
+def create_figure(style_type:str, context_type:str, palette_type:str, **subplot_kwargs) -> tuple[Figure, Axes]:
+    sns.set_theme(
+        style=style_type,
+        context=context_type,
+        palette=palette_type
+        )
+    fig, ax = plt.subplots(**subplot_kwargs)
+    return fig, ax
+
+def chart_metadata(ax:Axes, ax_title:str, ax_xlabel:str, ax_ylabel:str, ax_fontsize:int) -> Axes:
+    ax.set_title(title=ax_title, fontsize=ax_fontsize + 2, fontweight='bold')
+    ax.set_xlabel(ax_xlabel, fontsize=ax_fontsize)
+    ax.set_ylabel(ax_ylabel, fontisze=ax_fontsize)
+    return ax
+
+def style_ticks_grid(ax:Axes, grid_alpha:float, **tick_params_kwargs) -> Axes:
+    ax.grid(alpha=grid_alpha)
+    ax.tick_params(**tick_params_kwargs)
+    return ax
+
+def format_yaxis(ax:Axes, axis_type:Literal["%", "$", "K", "M"]) -> Axes:
+    def formatter(func):
+        ax.yaxis.set_major_formatter(FuncFormatter(func))
+    match axis_type:
+        case "%":
+            formatter(lambda x, pos: f"{x:.2f}%")
+
+        case "$":
+            formatter(lambda x, pos: f"${x:.2f}")
+
+        case "K":
+            formatter(lambda x, pos: f"{x/1000:.0f}K")
+
+        case "M":
+            formatter(lambda x, pos: f"{x/1000000:.1f}M")
+    return ax
+
+def add_bar_labels(ax:Axes, label_type:Literal["%", "$", "K", "M"], **kwargs) -> Axes:
+    for container in ax.containers:
+        match label_type:
+            case "%":
+                formatter = lambda v: f"{v:.2f}%"
+            case "$":
+                formatter = lambda v: f"${v:,.2f}"
+            case "K":
+                formatter = lambda v: f"{v/1_000:.2f}K"
+            case "M":
+                formatter = lambda v: f"{v/1_000_000:.2f}M"
+            case _:
+                raise ValueError(f"Unsupported label type: {label_type}")
+        labels = [formatter(value) for value in container.datavalues]
+        ax.bar_label(container, labels=labels, padding=3, **kwargs)
+    return ax
+
+def clean_save_figure(fig:Figure, folder_name:str, png_name:str, show_plot:bool):
+    sns.despine()
+    fig.tight_layout()
+    fig.savefig(os.path.join(folder_name, png_name))
+    if show_plot:
+        plt.show()
+
+def hist_plot(data:pd.Series|pd.DataFrame, **kwargs) -> Axes:
+    ax = sns.histplot(
+        data=data,
+        **kwargs
+    )
+    return ax
+
+def bar_plot(data=pd.DataFrame, **kwargs) -> Axes:
+    ax = sns.barplot(
+        data=data,
+        **kwargs
+    )
+    return ax
+
+def box_plot(data=pd.DataFrame, **kwargs) -> Axes:
+    ax = sns.boxenplot(
+        data=data,
+        **kwargs
+    )
+    return ax
+
+def line_plot(data=pd.DataFrame, **kwargs) -> Axes:
+    ax = sns.lineplot(
+        data=data,
+        **kwargs
+    )
+    return ax
+
+def heatmap(data=pd.DataFrame, **kwargs) -> Axes:
+    ax = sns.heatmap(
+        data=data,
+        **kwargs
+    )
+    return ax
