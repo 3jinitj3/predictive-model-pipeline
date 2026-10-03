@@ -191,26 +191,43 @@ def outlier_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict
         numerical_df = dataset.select_dtypes(include='number')
         header('outlier', name)
         for column_name, data in numerical_df.items():
-            q1 = round(np.quantile(data, .25), 2)
-            q3 = round(np.quantile(data, .75), 2)
+            q1 = round(data.quantile(.25), 2)
+            q3 = round(data.quantile(.75), 2)
             iqr = round(q3 - q1, 2)
             upper_limit = round(q3 + (1.5 * iqr), 2)
             lower_limit = round(q1 - (1.5 * iqr), 2)
             upper_outliers = data[data > upper_limit]
-            upper_count = len(upper_outliers)
+            upper_count = upper_outliers.shape[0]
             lower_outliers = data[data < lower_limit]
-            lower_count = len(lower_outliers)
-            print(f"{'Column:':<20}{column_name}")
-            print(f"{'Q1 Quantile:':<26}{q1}")
-            print(f"{'Q3 Quantile:':<26}{q3}")
-            print(f"{'Inter Quartile Range (IQR):':<26}{iqr}")
-            print(f"{'Upper Threshold:':<26}{upper_limit}")
-            print(f"{'Lower Threshold:':<26}{lower_limit}\n")
-            print(f"{f'Number of outliers above the {upper_limit} threshold:':<50}{upper_count}")
-            print(f"{f'Number of outliers below the {lower_limit} threshold:':<50}{lower_count}\n")
+            lower_count = lower_outliers.shape[0]
+            print(f"{'Column Name:':<30}{column_name}")
+            print(f"{f'Upper Outliers:':<30}{upper_count}")
+            print(f"{f'Lower Outliers:':<30}{lower_count}\n")
+            print(f"{'Q1 Quantile:':<30}{q1}")
+            print(f"{'Q3 Quantile:':<30}{q3}")
+            print(f"{'Inter Quartile Range (IQR):':<30}{iqr}")
+            print(f"{'Upper Threshold:':<30}{upper_limit}")
+            print(f"{'Lower Threshold:':<30}{lower_limit}\n")
             print(f"Upper Outlier Values\n{'=' * 20}")
-            print(f'o'[*upper_outliers], sep='\n')
+            if upper_outliers.empty:
+                print("No Upper Outliers")
+            else:
+                if len(upper_outliers) > 100:
+                    print("Number of upper outliers is to large to print (>100)")
+                    print(f"Sample\n{upper_outliers.values[:10]}")
+                else:
+                    print(*[f'o {value}' for value in upper_outliers], sep='\n')
+            print()
             print(f"Lower Outlier Values\n{'=' * 20}")
-            print(f'o'[*lower_outliers], sep='\n')
-
+            if lower_outliers.empty:
+                print("No Lower Outliers")
+            else:
+                if len(lower_outliers) > 100:
+                    print("Number of lower outliers is to large to print (>100)")
+                    print(f"Sample\n{lower_outliers.values[:10]}")
+                else:
+                    print(*[f'o {value}' for value in lower_outliers], sep='\n')
+            print()
+            print(f"{'=' * 100}")
+        footer('outlier', name)
 outlier_summary(datasets)
