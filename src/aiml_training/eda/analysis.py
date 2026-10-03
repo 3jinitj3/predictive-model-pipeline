@@ -2,12 +2,12 @@ from src.aiml_training.eda.aquisition import load_data, multiple_dataframes, com
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from collections import namedtuple
 
 
 # Creating a flexible path variable to execute file from any path.
 project_root = Path(__file__).resolve().parents[3]
 data_dir = project_root/"data"
+
 
 # Load datasets
 alzheimers_df, questions_df, state_populations_df, fifty_plus_df, estimated_cases_df = multiple_dataframes([
@@ -17,6 +17,7 @@ alzheimers_df, questions_df, state_populations_df, fifty_plus_df, estimated_case
     ("csv", f"{data_dir}/fifty_plus.csv", None),
     ("csv", f"{data_dir}/estimated_ad_cases_2015_2020.csv", None)
 ])
+
 
 # Store datasets in order to reference the dataframe and variable name.
 datasets = {
@@ -30,6 +31,16 @@ datasets = {
 
 # Report header
 def header(report:str, df_name:str) -> None:
+    """
+    Create header for formatted reports.
+
+    Args:
+        report: Name of the report.
+        df_name: Name of DataFrame.
+
+    Returns:
+        None: Prints formatted header banner.
+    """
     title = f"{report.title()} Report for {df_name}"
     print(f"{'=' * 100}")
     print(f"{title:^100}")
@@ -38,6 +49,16 @@ def header(report:str, df_name:str) -> None:
 
 # Report footer
 def footer(report:str, df_name:str) -> None:
+    """
+    Create footer for formatted reports.
+
+    Args:
+        report: Name of the report.
+        df_name: Name of DataFrame.
+
+    Returns:
+        None: Prints formatted footer banner.
+    """
     title = f"End of {report.title()} Report for {df_name}"
     print(f"{'=' * 100}")
     print(f"{title:^100}")
@@ -47,7 +68,13 @@ def footer(report:str, df_name:str) -> None:
 # Function to print out descriptive statistics for each dataframe
 def descriptive_stats(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Print descriptive statistics for each DataFrame.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted descriptive statistics report.
     """
     for name, dataset in df_dict.items():
         print(f"{'=' * 100}")
@@ -68,7 +95,13 @@ def descriptive_stats(df_dict:dict[str:pd.DataFrame]) -> None: # Later return di
 # Print missing values form each dataframe
 def missing_value_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Print summary of missing values.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted missing values report.
     """
     for name, dataset in df_dict.items():
         missing_values_series = dataset.isna().sum()
@@ -88,7 +121,13 @@ def missing_value_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later retur
 # Change str and object dtypes to categorical for memory efficiency and prep for model encoding
 def categorical_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Prints columns with str data types as categorical data types to see the number of unique values for future encoding.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted report on categorical values per string column in each DataFrame.
     """
     for name, dataset in df_dict.items():
         string_cols = dataset.select_dtypes(include=['object', 'str']).columns
@@ -117,7 +156,13 @@ def categorical_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return 
 # Generate correlation report for each dataframe
 def correlation_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Print correlation summary for each DataFrame.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted correlation summary report.
     """
     for name, dataset in df_dict.items():
         numerical_df = dataset.select_dtypes(include='number')
@@ -148,7 +193,13 @@ def correlation_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return 
 # Duplicate report for dataframes
 def duplicate_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Prints summary of DataFrame duplicates.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted duplicate report.
     """
     for name, dataset in df_dict.items():
         raw_row_number = dataset.shape[0]
@@ -165,12 +216,18 @@ def duplicate_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return di
             print(f"{'Number of rows:':<17}{raw_row_number}")
             print(f"{'Duplicate rows:':<17}{duplicate_rows}\n")
             footer('duplicate', name)
-# duplicate_summary(datasets)
+
 
 # Get dtypes within dataframes
 def dtypes_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Prints a summary of DataFrame data types.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted data types report.
     """
     for name, dataset in df_dict.items():
         dtypes = dataset.dtypes
@@ -180,12 +237,18 @@ def dtypes_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict 
         print("Data Types by Percentage")
         print(dataset.dtypes.value_counts(normalize=True))
         footer('dtypes', name)
-# dtypes_summary(datasets)
+
 
 # Generate report on numerical column outliers. Get IQR(Interquartile Range) and report values outside upper and lower limits.
 def outlier_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict for reports.
     """
-    
+    Prints a summary of DataFrame numerical column outliers.
+
+    Args:
+        df_dict: Dictionary of DataFrames. Dictionary key is the DataFrame name and its value is the DataFrame.
+
+    Returns:
+        None: Prints formatted numerical columns outlier report
     """
     for name, dataset in df_dict.items():
         numerical_df = dataset.select_dtypes(include='number')
@@ -230,4 +293,4 @@ def outlier_summary(df_dict:dict[str:pd.DataFrame]) -> None: # Later return dict
             print()
             print(f"{'=' * 100}")
         footer('outlier', name)
-outlier_summary(datasets)
+        # add outlier pct count per column to see the distribution

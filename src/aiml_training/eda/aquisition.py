@@ -1,16 +1,29 @@
 import pandas as pd
 import requests
-from pathlib import Path
 from typing import Literal
 from sqlalchemy.engine import Connection
 
 
 # Extract data from csv or url and load into a df
-def load_data(fetch_type:Literal["csv", "request"], path_url:str, **kwargs) -> pd.DataFrame:
+def load_data(fetch_type:Literal["csv", "requests"], path_url:str, **kwargs) -> pd.DataFrame:
     """
-    
+    Fetch csv or json data and load to DataFrame.
+
+    Args:
+        fetch_type: Data source type ('csv' or 'requests').
+        path_url: CSV file path or API URL.
+        **kwargs: Additional arguments passed to the data source.
+
+    Returns:
+        DataFrame containing loaded data.
+
+    Raises:
+        FileNotFoundError: If CSV file not found.
+        TimeoutError: If request exceeds timeout limit.
+        ConnectionError: If connection to server could not be established.
+        ValueError: If unsupported fetch_type is provided.
     """
-    match fetch_type:
+    match fetch_type.lower().strip():
         case "csv":
             try:
                 return pd.read_csv(path_url, **kwargs)
@@ -43,11 +56,21 @@ def load_data(fetch_type:Literal["csv", "request"], path_url:str, **kwargs) -> p
 # Connect and load data from db
 def load_db_data(query:str, conn:Connection) -> pd.DataFrame:
     """
-    
+    Fetch data from database.
+
+    Args:
+        query: SQL query clauses.
+        conn: Connection arguments for database.
+
+    Returns:
+        DataFrame containing loaded data.
+
+    Raises:
+        RuntimeError: If database query fails
     """
     try:
         return pd.read_sql(query, conn)
-    except Exception as error:
+    except RuntimeError as error:
         raise RuntimeError(
             f"Database query failed:\n{query}"
         ) from error
@@ -56,7 +79,18 @@ def load_db_data(query:str, conn:Connection) -> pd.DataFrame:
 # Create dictionary lookup for datasets to be used later in apply functions
 def combine_columns(data:pd.DataFrame, number_of_columns:int, ordered_columns:list) -> dict:
     """
-    
+    Zip columns together to form a dictionary with a single key or tuple-based keys.
+
+    Args:
+        data: DataFrame
+        number_of_columns: Determines whether the output uses a single key or tuple-based keys (2 or 3).
+        ordered_columns: A List of column names in priority order. Place key column(s) first.
+
+    Returns:
+        Dictionary that can be used with mapping and apply functions.
+
+    Raises:
+        ValueError: If unsupported number_of_columns value is provided.
     """
     if number_of_columns == 2:
         return dict(zip(data[ordered_columns[0]], data[ordered_columns[1]]))
@@ -66,19 +100,20 @@ def combine_columns(data:pd.DataFrame, number_of_columns:int, ordered_columns:li
         raise ValueError(f"Number of columns must be 2 or 3 at the max, forming a dictionar")
 
 
-def multiple_dataframes(fetch_path_kwargs:list[tuple]) -> list[pd.DataFrame]:
+# Create funciton to process multiple DataFrames
+def multiple_dataframes(fetch_path_kwargs:list[tuple[str, str, dict]]) -> list[pd.DataFrame]:
     """
-    Takes a list tuples ("method", "path", "**kwargs"), fetches data and transforms into dataframes.
+    Takes a list tuples, fetches data and converts it into DataFrames.
 
     Args:
-        method_path_kwargs List[tuple]: [(
-            method = same as load_data function ['csv', 'requests', 'db'],
-            path = absolute_path/*.csv | url,
-            kwargs = additional **kwargs associated with the fetch type
-        )]
+        fetch_path_kwargs:
+            List of tuples:
+                fetch = Data source type ('csv' or 'requests')
+                path = CSV file path or API URL
+                kwargs = Additional arguments passed to the data source
 
     Returns:
-        A list of dataframes.
+        A list of loaded DataFrames.
     """
     df_list = []
     for fetch, path, kwargs in fetch_path_kwargs:
