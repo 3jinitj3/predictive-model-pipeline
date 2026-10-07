@@ -1,9 +1,8 @@
 import os
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from matplotlib.ticker import StrMethodFormatter, FuncFormatter
+from matplotlib.ticker import FuncFormatter
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from typing import Literal
@@ -400,7 +399,3 @@ def heatmap(data:pd.DataFrame, title:str, save:bool=False,  **heat_kwargs) -> tu
     sns.heatmap(data=data, ax=ax, **heat_kwargs)
     clean_save_figure(fig=fig, folder_name='Charts', png_name=f'{text_formatter(title, "file")}.png', save=save)
     return fig, ax
-
-
-ad_df = datasets["alzheimers_df"]
-hist_plot(ad_df, 'Data_Value', 'Test Hist Plot', multiple='dodge')

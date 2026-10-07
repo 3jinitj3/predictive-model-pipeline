@@ -1,5 +1,5 @@
-from src.aiml_training.eda.aquisition import  multiple_dataframes
-import pandas as pdload_data,
+from src.aiml_training.eda.acquisition import multiple_dataframes
+import pandas as pd
 import numpy as np
 from pathlib import Path
 
