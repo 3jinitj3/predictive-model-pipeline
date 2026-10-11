@@ -16,12 +16,6 @@ __pycache__/
 # Data
 data/
 
-# Trained Models
-models/
-
-# Jupyter
-.ipynb_checkpoints/
-
 # Environment Variables
 .env
 
