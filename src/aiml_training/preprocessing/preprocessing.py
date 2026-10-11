@@ -12,7 +12,7 @@ class PreparedData:
     numerical_cols: list[str]
 
 
-def prepare_pipeline_data(data:pd.DataFrame, target_col:str) -> PreparedData:
+def prepare_pipeline_data(data:pd.DataFrame, target_col:str|list[str]) -> PreparedData:
     if not isinstance(data, pd.DataFrame):
         raise TypeError("Error: Data argument type must be 'pd.DataFrame'")
     if target_col not in data.columns:

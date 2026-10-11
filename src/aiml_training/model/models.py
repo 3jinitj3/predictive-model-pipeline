@@ -7,12 +7,13 @@ from sklearn.linear_model import LinearRegression as SKLearnLinearRegression
 from sklearn.ensemble import RandomForestRegressor as SKLearnRandomForestRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from abc import ABC, abstractmethod
+from typing import Optional
 
 
 
 class Model(ABC):
     def __init__(self):
-        self.pipeline = Pipeline | None = None
+        self.pipeline: Pipeline | None = None
 
 
     @abstractmethod
@@ -29,7 +30,7 @@ class Model(ABC):
     def predict(self, X_test:pd.DataFrame) -> np.ndarray:
         if self.pipeline is None:
             raise ValueError("Error: Pipeline has not been built")
-        return self.pipeline.predict(X)
+        return self.pipeline.predict(X_test)
 
 
     def evaluate(self, y_test:pd.Series, y_prediction:np.ndarray) -> None:
@@ -37,8 +38,8 @@ class Model(ABC):
         rmse = mean_squared_error(y_test, y_prediction) ** 0.5
         r2 = r2_score(y_test, y_prediction)
         print(y_test.describe())
-        print(f"MAE: {mae:,.2f}")
-        print(f"RMSE: {rmse:,.2f}")
+        print(f"MAE: {mae:,.6f}")
+        print(f"RMSE: {rmse:,.6f}")
         print(f"R2: {r2:.4f}")
 
 
