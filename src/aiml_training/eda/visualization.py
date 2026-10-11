@@ -6,7 +6,6 @@ from matplotlib.ticker import FuncFormatter
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 from typing import Literal
-from src.aiml_training.eda.analysis import datasets
 
 
 def text_formatter(text:str, sanitize_to:Literal["file", "title"]) -> str:

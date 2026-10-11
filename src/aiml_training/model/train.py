@@ -1,43 +1,58 @@
 from src.aiml_training import preprocessing
-from .models import LinearRegression
-
-preprocessing.final_col_order.append('Next_year_cases')
-preprocessing.final_col_order.remove('State')
-preprocessing.final_col_order.remove('Year')
-def abalation(removed_column:str):
-    # def train_main():
-    preprocessing.model_df['ad_rate'] = preprocessing.model_df['Next_year_cases'] / preprocessing.model_df['State_pop_by_year']
-    training_df = preprocessing.model_df.drop(columns=[removed_column])
-    if len(training_df.columns) == 2:
-        print('Down to group indexes')
-        return
-    train_df = training_df[training_df['Year'] <= 2018].groupby(['Year', 'State']).mean(numeric_only=True)
-    X_train = train_df.drop(columns='ad_rate')
-    y_train = train_df['ad_rate']
-    test_df = training_df[training_df['Year'] == 2019].groupby(['Year', 'State']).mean(numeric_only=True)
-    X_test = test_df.drop(columns='ad_rate')
-    y_test = test_df['ad_rate']
-    # training_df = training_df.groupby(['Year', 'State']).mean(numeric_only=True)
-    # training_df_2018 = training_df[training_df['Year'] <=2018]
-    # training_df_2019 = training_df[training_df['Year'] == 2019]
-    # test_2019 = training_df_2019.drop(columns='ad_rate')
-    # test_key_2019 = test_2019['ad_rate']
-    # prepared_data = preprocessing.prepare_pipeline_data(training_df_2018, 'ad_rate')
-    linear_regression = LinearRegression()
-    linear_regression.build_pipeline(X_train.select_dtypes(include='category').columns.tolist(), X_train.select_dtypes(exclude='category').columns.tolist())
-    linear_regression.pipeline.fit(X_train, y_train)
-    y_prediction = linear_regression.pipeline.predict(X_test)
-    linear_regression.evaluate(y_test, y_prediction)
+from .models import *
+import pandas as pd
+from datetime import datetime
+from dataclasses import dataclass
 
 
-for column in preprocessing.final_col_order:
-    print(f"{'=' * 50}")
-    print(f"{f'R2 Result With The Removal Of Column {column}':^50}")
-    print(f"{'=' * 50}")
-    abalation(column)
-    print(f"{'=' * 50}")
-    print(f"{'End of R2 Report For Column ':^50}")
-    print(f"{'=' * 50}")
+@dataclass
+class EvaluationData:
+    model_df: pd.DataFrame
+    model: Model
+    prepared_data: type[preprocessing.PreparedData] | type[preprocessing.TimeSerisData]
+    target_cols: str|list[str]
+    time_series_col:str|None = None
+    time_split: int|datetime|None = None
+    grouping: str|list[str]|None = None
+    
 
-# if __name__ == "__main__":
-#     train_main()
+def train_model(model_df:pd.DataFrame, sklearn_model:Model, target_cols:str|list[str], time_series_col:str|None=None, time_split:int|datetime|None=None, grouping:str|list[str]|None = None, collect_dataclass:bool=False) -> type[EvaluationData]|None:
+    """
+    
+    """
+
+    if grouping:
+        model_df = model_df.groupby(grouping).mean(numeric_only=True)
+
+    if time_series_col:
+        prepared_data = preprocessing.prepare_time_series_data(
+            model_df=model_df,
+            target_cols=target_cols,
+            time_series_col=time_series_col,
+            time_split=time_split)
+        
+    else:
+        prepared_data = preprocessing.prepare_pipeline_data(
+            model_df=model_df,
+            target_cols=target_cols)
+
+    sklearn_model.build_pipeline(prepared_data.category_cols, prepared_data.numerical_cols)
+    sklearn_model.fit(X_train=prepared_data.X_train, y_train=prepared_data.y_train)
+    y_prediction = sklearn_model.predict(prepared_data.X_test)
+    sklearn_model.evaluate(y_test=prepared_data.y_test, y_prediction=y_prediction)
+
+    if collect_dataclass:
+        return EvaluationData(
+            model_df = model_df,
+            model = sklearn_model,
+            prepared_data = prepared_data,
+            target_cols = target_cols,
+            time_series_col = time_series_col,
+            time_split = time_split,
+            grouping = grouping)
+    return None
+
+    
+
+if __name__ == "__main__":
+    evaluation_data = train_model()
