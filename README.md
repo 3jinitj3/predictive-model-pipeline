@@ -1,536 +1,303 @@
-# Predictive Model Pipeline
+# Predictive Analytics & AI Platform
 
 ## Overview
 
-The Predictive Model Pipeline is a modular machine learning and analytics framework designed to support the complete predictive modeling lifecycle across multiple industries and use cases.
+The Predictive Analytics & AI Platform is a modular machine learning framework and secure backend application designed to support the complete machine learning lifecycle from dataset ingestion to model deployment, analytics, and reporting.
 
-The project provides reusable components for:
+The project is evolving into an end-to-end platform where users can register accounts, manage datasets, train machine learning models, explore analytics, and leverage AI-assisted workflows through a secure web interface.
 
-- Data acquisition
+Rather than focusing on a single industry use case, the platform is designed as a reusable framework for experimentation, education, analytics, and model development.
+
+Core platform capabilities include:
+
+- User registration and authentication
+- Dataset management and storage
+- Machine learning workflow orchestration
 - Exploratory Data Analysis (EDA)
-- Data preprocessing
-- Feature engineering
-- Machine learning model training
-- Model evaluation
-- Data persistence
-- Reporting and visualization
-- Dashboard integration
-
-Rather than being built for a single problem domain, the framework is designed as a plug-and-play architecture that can be applied to healthcare, cybersecurity, finance, and other predictive analytics use cases with minimal changes to the underlying codebase.
-
-The initial implementation utilizes Alzheimer's disease datasets to validate and refine the framework architecture before expanding into additional predictive modeling domains.
+- Model training and evaluation
+- Analytics and visualization
+- AI-assisted workflows
+- Dashboard reporting
+- Experiment management
+- Secure configuration management
 
 ---
 
-# Objectives
+## Objectives
 
-The primary objective of this project is to create a reusable predictive analytics platform that separates data acquisition, analysis, preprocessing, modeling, evaluation, and reporting into independent modules.
+The primary objective of the project is to create a reusable machine learning and analytics framework that combines software engineering, security, data engineering, and machine learning concepts into a single platform.
 
 Key design goals include:
 
-- Reusable workflows
 - Modular architecture
 - Separation of concerns
-- Maintainable code
-- Extensible model development
-- Database integration
-- Security-focused development practices
-- Scalable deployment options
+- Secure-by-design development
+- Reusable machine learning workflows
+- Dataset and model persistence
+- User-specific workspaces
+- Cloud-ready deployment
+- Extensible AI integration
+- Scalable backend architecture
 
 ---
 
-# Architecture
+## High-Level Architecture
 
 ```text
-Data Sources
-      │
-      ▼
- Acquisition Layer
-      │
-      ▼
- Analysis (EDA)
-      │
-      ▼
- Visualization
-      │
-      ▼
- Preprocessing
-      │
-      ▼
- Model Training
-      │
-      ▼
- Model Evaluation
-      │
-      ▼
- Database Layer
-      │
-      ▼
- Dashboard / UI
+User Interface
+       │
+       ▼
+     FastAPI
+       │
+ ┌─────┼─────┐
+ │     │     │
+ ▼     ▼     ▼
+Auth  ML    Data
+Svc   Svc   Svc
+ │     │     │
+ ▼     ▼     ▼
+JWT  Models Datasets
+       │
+       ▼
+ PostgreSQL
+       │
+       ▼
+ Dashboards &
+ Visualizations
 ```
 
 ---
 
-# Technology Stack
+## Current Features
 
-## Language
+### Authentication & Security
+
+- User registration
+- User authentication
+- JWT-based authorization
+- Password hashing
+- Secure credential handling
+- Service-layer architecture
+- Encrypted configuration management
+
+### Backend Services
+
+- FastAPI REST APIs
+- SQLAlchemy ORM
+- Dependency injection
+- Async database operations
+- PostgreSQL integration
+- Alembic migrations
+
+### Data & Analytics
+
+- Dataset ingestion
+- Data transformation
+- Exploratory Data Analysis (EDA)
+- Feature engineering
+- Data persistence
+- Reporting workflows
+
+### Machine Learning
+
+- Classification workflows
+- Regression workflows
+- Cross-validation
+- Hyperparameter tuning
+- Model evaluation
+- Experiment tracking
+
+---
+
+## Planned Features
+
+### User Experience
+
+- Dataset upload interface
+- User dashboards
+- Visualization workspace
+- Model management interface
+- Experiment history
+
+### AI Integration
+
+- Prompt-driven analytics
+- AI-assisted model generation
+- Automated feature recommendations
+- Dataset insights
+- Model explanation tools
+
+### Analytics & Reporting
+
+- Interactive dashboards
+- Performance charts
+- Model comparison reports
+- Exportable reports
+- Dataset profiling
+
+### Platform Services
+
+- Model repository
+- Dataset repository
+- User workspaces
+- Project management
+- Cloud deployment options
+
+---
+
+## Technology Stack
+
+### Backend
 
 - Python
+- FastAPI
+- SQLAlchemy
+- Alembic
+- JWT Authentication
 
-## Data Analysis
+### Database
+
+- PostgreSQL
+
+### Data Engineering
 
 - Pandas
 - NumPy
 
-## Visualization
+### Machine Learning
+
+- Scikit-Learn
+
+### Visualization
 
 - Matplotlib
 - Seaborn
 
-## Machine Learning
+### Testing
 
-- Scikit-Learn
+- PyTest
 
-## Databases
+### Deployment & Infrastructure
 
-- SQLite
-- PostgreSQL (Planned)
-
-## Testing
-
-- Pytest
-
-## Security & Quality
-
-- GitHub CodeQL (Planned)
-- Dependabot (Planned)
-- pip-audit (Planned)
-- Ruff (Planned)
-- Black (Planned)
-
-## DevOps & Infrastructure
-
-- Docker (Planned)
+- Docker
 - Docker Compose (Planned)
-- GitHub Actions (Planned)
+- Cloud-Hosted Deployment (Planned)
 
-## Version Control
+### Version Control
 
 - Git
 - GitHub
 
 ---
 
-# Framework Components
+## Security Features
 
-## Acquisition Layer
+Current security capabilities include:
 
-Responsible for ingesting data from multiple sources and converting it into a standardized DataFrame workflow.
+- JWT authentication
+- Password hashing
+- Secure API design
+- Encrypted configuration management
+- Secret management
+- Separation of concerns
+- Database access controls
 
-### Current Features
+Planned enhancements:
 
-- CSV ingestion
-- API ingestion
-- Database querying
-- Multi-dataset loading
-- Error handling
-- Exception chaining
-
-### Planned Enhancements
-
-- Configuration-driven data loading
-- Data validation framework
-- Automated schema checking
-
----
-
-## Analysis (EDA) Layer
-
-Provides reusable exploratory data analysis capabilities.
-
-### Current Features
-
-- Descriptive statistics
-- Missing value analysis
-- Categorical feature profiling
-- Correlation analysis
-- Duplicate detection
-- Data type profiling
-- Memory usage analysis
-
-### Planned Features
-
-- Outlier detection
-- Automated EDA reports
-- Data quality scoring
-- Feature significance analysis
+- Role-Based Access Control (RBAC)
+- Multi-Factor Authentication (MFA)
+- Audit logging
+- Security event monitoring
+- Advanced secrets management
 
 ---
 
-## Visualization Layer
+## Development Roadmap
 
-Provides reusable charting and exploratory visualization utilities.
+### Phase 1 - Core Backend ✅
 
-### Planned Features
-
-- Histograms
-- KDE plots
-- Box plots
-- Bar charts
-- Scatter plots
-- Correlation heatmaps
-- Growth analysis charts
-- Distribution comparisons
-
----
-
-## Preprocessing Layer
-
-Provides reusable feature preparation workflows for machine learning.
-
-### Planned Features
-
-- Missing value handling
-- Type conversion
-- Feature engineering
-- Feature scaling
-- Feature encoding
-- Data transformations
-- Train/test splitting
-
----
-
-## Modeling Layer
-
-Provides reusable machine learning training workflows.
-
-### Planned Features
-
-- Classification pipelines
-- Regression pipelines
-- Model comparison tools
-- Hyperparameter tuning
-- Feature importance reporting
-- Experiment tracking
-
-### Planned OOP Implementation
-
-```python
-class ModelPipeline:
-    pass
-```
-
-The modeling layer is planned as an object-oriented framework to simplify model training, evaluation, and deployment workflows.
-
----
-
-## Evaluation Layer
-
-### Planned Features
-
-- Accuracy metrics
-- Precision and Recall
-- ROC-AUC
-- Cross-validation
-- Confusion matrices
-- Regression metrics
-- Model comparison reporting
-
----
-
-## Database Layer
-
-Designed to persist datasets, model outputs, evaluation results, and reporting artifacts.
-
-### SQLite
-
-Intended for:
-
-- Development
-- Testing
-- Local experimentation
-
-### PostgreSQL
-
-Intended for:
-
-- Reporting storage
-- Model experiment tracking
-- Dataset persistence
-- Analytical result storage
-- Production-style database workflows
-
----
-
-## Dashboard / User Interface
-
-Planned as the primary user-facing component.
-
-### Potential Features
-
-- Dataset uploads
-- EDA reporting
-- Model execution
-- Prediction generation
-- Interactive visualizations
-- Model performance reporting
-
----
-
-# Industry Use Cases
-
-The framework is intentionally domain-agnostic and designed to support multiple predictive modeling applications.
-
-## Healthcare Analytics
-
-### Current Implementation
-
-Alzheimer's Disease Analysis
-
-Potential applications:
-
-- Disease prevalence reporting
-- Population trend analysis
-- Risk estimation
-- Forecasting and projection models
-
----
-
-## Cybersecurity Analytics
-
-### Planned Applications
-
-- Threat detection
-- Intrusion detection
-- Security event classification
-- Attack pattern analysis
-- Anomaly detection
-
-Potential datasets:
-
-- Security logs
-- SIEM exports
-- Endpoint telemetry
-- Alert data
-
----
-
-## Network Analytics
-
-### Planned Applications
-
-- Traffic classification
-- Network anomaly detection
-- Capacity forecasting
-- Usage trend analysis
-
-Potential datasets:
-
-- NetFlow
-- Packet metadata
-- Traffic summaries
-- Monitoring platform exports
-
----
-
-## Financial Analytics
-
-### Planned Applications
-
-- Stock price action analysis
-- Trend detection
-- Volatility analysis
-- Market forecasting
-- Signal generation
-
-Potential datasets:
-
-- OHLCV market data
-- Technical indicators
-- Economic data
-- Market sentiment data
-
----
-
-# Security & Quality Assurance Roadmap
-
-Security and quality controls are planned throughout the development lifecycle.
-
-## Static Analysis
-
-### GitHub CodeQL
-
-Planned capabilities:
-
-- Security vulnerability detection
-- Code quality analysis
-- Repository-wide scanning
-- Automated GitHub integration
-
----
-
-## Dependency Security
-
-Planned tooling:
-
-- Dependabot
-- pip-audit
-
-Planned capabilities:
-
-- Automated dependency updates
-- Vulnerability detection
-- Dependency risk analysis
-
----
-
-## Secure API Development
-
-Planned practices:
-
-- Request timeout handling
-- Input validation
-- Exception management
-- Environment variable-based credential storage
-
-Example:
-
-```python
-API_KEY = os.getenv("API_KEY")
-```
-
----
-
-## Secrets Management
-
-Planned practices:
-
-- Environment variables
-- `.env` files
-- GitHub Secrets
-
-Sensitive information such as API keys, database credentials, and access tokens will never be stored within source control.
-
----
-
-## Dashboard Security
-
-Future web-facing components may include:
-
-- Nuclei vulnerability scanning
-- Dependency monitoring
-- Security testing workflows
-- Configuration validation
-
----
-
-# DevOps & Infrastructure Roadmap
-
-Future infrastructure enhancements include:
-
-## Docker
-
-Planned capabilities:
-
-- Reproducible environments
-- Dependency isolation
-- Simplified deployment
-- Portable execution environments
-
-## Docker Compose
-
-Planned capabilities:
-
-- Application orchestration
-- Database service orchestration
-- Multi-container deployments
-
-## GitHub Actions
-
-Planned capabilities:
-
-- Automated testing
-- Continuous integration
-- CodeQL scanning
-- Dependency auditing
-- Linting and formatting validation
-
----
-
-# Testing Strategy
-
-## Planned Coverage
-
-- Unit testing
-- Integration testing
-- Pipeline testing
-- Data validation testing
-- Model validation testing
-
-## Testing Framework
-
-- Pytest
-
----
-
-# Version Strategy
-
-The project follows milestone-based versioning.
-
-| Version | Milestone |
-|----------|------------|
-| v0.1.0 | EDA Framework Complete |
-| v0.2.0 | Modeling Framework Complete |
-| v0.3.0 | Testing Framework Complete |
-| v0.4.0 | Database Integration Complete |
-| v0.5.0 | Dashboard/UI Complete |
-| v0.6.0 | Security & Infrastructure Complete |
-| v1.0.0 | Core Predictive Model Pipeline Complete |
-
-After v1.0.0, standard semantic versioning practices will be followed.
-
-Examples:
-
-```text
-v1.0.1  Bug Fixes
-v1.1.0  Feature Enhancements
-v2.0.0  Major Architectural Changes
-```
-
----
-
-# Current Status
-
-## Completed
-
-- Project architecture
-- Data acquisition framework
-- EDA reporting framework
-- Missing value analysis
-- Categorical analysis
-- Correlation analysis
-- Duplicate analysis
-- Data type profiling
-
-## In Progress
-
-- Outlier detection
-- Visualization framework
-
-## Planned
-
-- Preprocessing framework
-- Modeling framework
-- Testing framework
+- FastAPI architecture
 - PostgreSQL integration
-- Dashboard development
-- Security automation
-- Docker deployment
+- SQLAlchemy ORM
+- Alembic migrations
+- Authentication services
+- User management
+
+### Phase 2 - Data Platform 🚧
+
+- Dataset ingestion
+- Dataset management
+- EDA services
+- Reporting workflows
+
+### Phase 3 - Machine Learning Platform
+
+- Model training services
+- Evaluation framework
+- Experiment tracking
+- Model repository
+
+### Phase 4 - Analytics & Visualization
+
+- Interactive dashboards
+- Reporting services
+- Visualization tooling
+
+### Phase 5 - AI Integration
+
+- Prompt-driven workflows
+- AI-assisted analytics
+- Model recommendations
+
+### Phase 6 - Deployment & Infrastructure
+
+- Docker containerization
+- CI/CD pipelines
+- Cloud deployment
+- Monitoring and observability
 
 ---
 
-# Long-Term Vision
+## Current Status
 
-The long-term objective is to develop a reusable predictive analytics platform capable of supporting multiple machine learning domains through a shared framework for acquisition, analysis, preprocessing, modeling, evaluation, storage, reporting, security, and deployment.
+### Completed
 
-The Alzheimer's implementation serves as the initial proof of concept for a broader platform intended to support healthcare, cybersecurity, network analytics, financial analytics, and future predictive modeling projects through a common, extensible architecture.
+- FastAPI backend architecture
+- PostgreSQL integration
+- SQLAlchemy ORM models
+- Alembic migration support
+- User authentication services
+- JWT authorization workflows
+- Password hashing
+- Service-layer architecture
+- Encrypted configuration management
+
+### In Progress
+
+- User management workflows
+- Dataset management
+- Analytics services
+- Machine learning integration
+
+### Planned
+
+- Frontend dashboard
+- Interactive visualizations
+- Model repository
+- AI-assisted workflows
+- Docker deployment
+- Cloud infrastructure
+- CI/CD pipelines
+
+---
+
+## Long-Term Vision
+
+The long-term goal is to create a secure, cloud-ready machine learning platform that allows users to move from raw datasets to actionable insights through a guided analytics and modeling workflow.
+
+The project serves as both:
+
+1. A practical machine learning and analytics platform.
+2. A demonstration of modern software engineering practices including authentication, authorization, secure API development, database design, machine learning pipelines, containerized deployment, and cloud-native architecture.
+
+The platform is being developed as a full-stack learning environment where users can experiment with datasets, machine learning models, analytics workflows, and AI-assisted tooling while gaining a deeper understanding of the technologies powering modern data-driven applications.
