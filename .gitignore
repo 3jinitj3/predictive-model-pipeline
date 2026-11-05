@@ -13,12 +13,20 @@ __pycache__/
 .vscode/
 .idea/
 
-# Data
-data/
-
 # Environment Variables
 .env
+*.key
+*.pem
+*.p12
+*.pfx
+secret.enc
+secrets/
+keys/
 
 # OS Files
 .DS_Store
 Thumbs.db
+
+db/
+
+uv.lock

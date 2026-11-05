@@ -1,0 +1,1 @@
+# Checks what current user can do
