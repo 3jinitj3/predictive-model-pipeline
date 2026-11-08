@@ -29,4 +29,12 @@ class UserResponse(BaseModel):
     user_id: int
     username: str
     email: EmailStr
-    
+
+
+class UserObject(BaseModel):
+    user_id: int
+    username: str
+    role_id: int
+    first_name: str
+    last_name: str
+    org_id: int

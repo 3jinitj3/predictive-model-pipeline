@@ -26,6 +26,7 @@ async def user_login(
         samesite='lax',
         max_age=30
     )
+
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 # When you need to continue working with the object use session.refresh(new_user) or session.flush()

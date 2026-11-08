@@ -5,6 +5,7 @@ from app.db.models.users import Users
 from app.db.models.logins import Logins
 from app.core.config import JWT_SECRET, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
 import jwt
+from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta, timezone 
 from fastapi import HTTPException
 from app.schemas.auth import TokenData
@@ -13,6 +14,9 @@ from sqlalchemy import select
 
 
 class AuthenticationService:
+
+    def __init__(self):
+        self.oauth2_schema = OAuth2PasswordBearer(tokenUrl='login')
 
     async def verify_login(self, credentials: OAuth2PasswordRequestForm, db: AsyncSession) -> TokenData:
         dummy_hash = cs.password_hash.hash('dummypassword')
@@ -89,11 +93,10 @@ class AuthenticationService:
             raise ' '
 
 
-
 auth_service = AuthenticationService()
 
 # Token endpoint, email and password for access token
 # for production grade this needs to be RS256 (RSA-SHA256 hashalgorithm or ES256(ECDSA-SHA256) smaller keys than RSA, FASTER VERIFICATION)
 # EdDSA NEW, Ed25519 (Edwards-Curve Digital Signature Algorithm) smaller keys than rsa, very secure and very fast
 
-# OAuth2, keey access token short (minutes) and add refresh token or session cookie for duration
+# OAuth2, key access token short (minutes) and add refresh token or session cookie for duration

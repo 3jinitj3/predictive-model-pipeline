@@ -1,5 +1,4 @@
 from pwdlib import PasswordHash
-from configparser_crypt import ConfigParserCrypt
 
 password_hash = PasswordHash.recommended()
 

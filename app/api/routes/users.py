@@ -5,18 +5,20 @@
 # Token endpoint, email and password for access token
 # Responses to no such user and wrong password should be identical for security
 from typing import Annotated
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends 
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import database, Database
-from app.schemas.users import UserCreate
+from app.db.session import database
+from app.schemas.users import UserCreate, UserObject
 from app.services.user_service import user_service
+from app.services.auth_service import auth_service
+from fastapi.security import OAuth2PasswordBearer
 
-database1 = Database()
-async_engine = database1.create_session_objects()
-database1.meta_create_all(async_engine)
 
-router = APIRouter(tags=['api.users'])
 
+router = APIRouter(tags=['users'])
+
+
+# Create user account
 @router.post('/register', status_code=201)
 async def register(user: UserCreate, session: Annotated[AsyncSession, Depends(database.get_db)]):
     try:
@@ -26,3 +28,13 @@ async def register(user: UserCreate, session: Annotated[AsyncSession, Depends(da
     except Exception:
         await session.rollback()
         raise 
+
+
+# This would be the users home page
+@router.get('/users/me', status_code=200)
+async def get_me(
+    token: Annotated[str, Depends(auth_service.oauth2_schema)],
+    db: Annotated[AsyncSession, Depends(database.get_db)]) -> UserObject:
+    return await user_service.get_current_user(token=token, db=db)
+
+
