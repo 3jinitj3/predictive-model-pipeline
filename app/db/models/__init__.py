@@ -1,0 +1,1 @@
+# Each table in the db has its own owner file.py ex: clients.py = CREATE TABLE clients (...);
